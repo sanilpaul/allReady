@@ -20,9 +20,6 @@ namespace AllReady.Areas.Admin.Features.Organizations
         {
             var organization = await _context.Organizations
                 .AsNoTracking()
-                .Include(org => org.Campaigns)
-                .Include(org => org.Location)
-                .Include(org => org.Users)
                 .Include(org => org.OrganizationContacts)
                 .ThenInclude(orgcontact => orgcontact.Contact)
                 .SingleAsync(org => org.Id == message.Id)
