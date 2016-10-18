@@ -19,39 +19,39 @@ namespace AllReady.Areas.Admin.Features.Organizations
 
         public async Task<OrganizationEditViewModel> Handle(OrganizationEditQuery message)
         {
-            var org = await _context.Organizations
+            var organization = await _context.Organizations
                 .AsNoTracking()
                 .Include(c => c.Campaigns)
                 .Include(l => l.Location)
                 .Include(u => u.Users).Include(tc => tc.OrganizationContacts)
                 .ThenInclude(c => c.Contact)
-                .SingleOrDefaultAsync(ten => ten.Id == message.Id)
+                .SingleOrDefaultAsync(org => org.Id == message.Id)
                 .ConfigureAwait(false);
 
-            if (org == null)
+            if (organization == null)
             {
                 return null;
             }
 
-            var organization = new OrganizationEditViewModel
+            var organizationEditViewModel = new OrganizationEditViewModel
             {
-                Id = org.Id,
-                Name = org.Name,
-                Location = org.Location.ToEditModel(),
-                LogoUrl = org.LogoUrl,
-                WebUrl = org.WebUrl,
-                Description = org.DescriptionHtml,
-                Summary =  org.Summary,
-                PrivacyPolicy = org.PrivacyPolicy,
-                PrivacyPolicyUrl = org.PrivacyPolicyUrl
+                Id = organization.Id,
+                Name = organization.Name,
+                Location = organization.Location.ToEditModel(),
+                LogoUrl = organization.LogoUrl,
+                WebUrl = organization.WebUrl,
+                Description = organization.DescriptionHtml,
+                Summary =  organization.Summary,
+                PrivacyPolicy = organization.PrivacyPolicy,
+                PrivacyPolicyUrl = organization.PrivacyPolicyUrl
             };
 
-            if (org.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
+            if (organization.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact != null)
             {
-                organization = (OrganizationEditViewModel)org.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(organization);
+                organizationEditViewModel = (OrganizationEditViewModel)organization.OrganizationContacts?.SingleOrDefault(tc => tc.ContactType == (int)ContactTypes.Primary)?.Contact.ToEditModel(organizationEditViewModel);
             }
             
-            return organization;
+            return organizationEditViewModel;
         }
     }
 }
